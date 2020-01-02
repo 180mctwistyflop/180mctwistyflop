@@ -46,7 +46,7 @@ print("--------------------------------------------------------------")
 local luaFileName = "180mctwistyflop.lua"
 local luaFileDownloadURL = "https://raw.githubusercontent.com/180mctwistyflop/180mctwistyflop/master/180mctwistyflop.lua"
 local luaVersionURL = "https://raw.githubusercontent.com/180mctwistyflop/180mctwistyflop/master/version.txt"
-local luaVersion = "1.0.0"
+local luaVersion = "1.0.1"
 local luaUpdateText = ""
 local luaVersionCheckDone = false
 local luaUpdateAvailable = false
