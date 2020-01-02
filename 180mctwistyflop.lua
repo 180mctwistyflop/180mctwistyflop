@@ -24,6 +24,14 @@
 
 ------------------------------------------------------------------------------------------
 
+local menuref = gui.Reference("MENU")
+local settingsmisc = gui.Reference('SETTINGS', "Miscellaneous");    
+local font = draw.CreateFont("Tahoma", 13, 13);
+local font_bold = draw.CreateFont("Tahoma Bold", 15, 15);
+local config = "default";
+
+------------------------------------------------------------------------------------------
+
 print("--------------------------------------------------------------")
 print("- 180 mctwistyflop - Aimware Edition -")
 print("--------------------------------------------------------------")
@@ -35,7 +43,7 @@ print("--------------------------------------------------------------")
 
 --Auto Update (pasted from Onion's)
 
-local luaFileName = GetScriptName()
+local luaFileName = "180mctwistyflop.lua"
 local luaFileDownloadURL = "https://raw.githubusercontent.com/180mctwistyflop/180mctwistyflop/master/180mctwistyflop.lua"
 local luaVersionURL = "https://raw.githubusercontent.com/180mctwistyflop/180mctwistyflop/master/version.txt"
 local luaVersion = "1.0.0"
@@ -44,16 +52,32 @@ local luaVersionCheckDone = false
 local luaUpdateAvailable = false
 local luaUpdateDownloaded = false
 local luaUpdated = false
+local alert1 = false
+local alert2 = false
+local alert3 = false
 draw.CreateFont(Tahoma, 70, 70 )
 
 local function update()
 	if (luaUpdated == false) then
-		if (gui.GetValue("lua_allow_http") == false or gui.GetValue("lua_allow_cfg") == false) then
-			luaUpdateText = "mctwistyflop: unable to update, please enable config editing and config writing!"
-			return
+        if (gui.GetValue("lua_allow_http") == false or gui.GetValue("lua_allow_cfg") == false) then
+            if alert1 == false then
+                print("mctwistyflop: unable to update, please enable config editing and config writing!")
+                alert1 = true
+			end
 		else
-			if (luaUpdateAvailable and not luaUpdateDownloaded) then
-		        luaUpdateText = "mctwistyflop: script has been updated. reload the script."
+            if (luaUpdateAvailable and not luaUpdateDownloaded) then
+                if alert2 == false then
+                    local curtime = math.floor(globals.CurTime())
+                    local delay = curtime+2
+                    print(curtime)
+                    --print("mctwistyflop: update available... please wait while the script updates...")
+                    if curtime == delay then
+                        print("mctwistyflop: script has been updated. reload the script.")
+                        alert2 = true
+                    end
+                else
+                    return
+                end
 		        local new_version_content = http.Get(luaFileDownloadURL)
 		        local old_script = file.Open(luaFileName, "w")
 		        old_script:Write(new_version_content)
@@ -72,27 +96,13 @@ local function update()
 				if (version ~= luaVersion) then
 					luaUpdateAvailable = true
 				else
-					luaUpdated = true
+                    luaUpdated = true
+                    print("mctwistyflop: lua is already updated.")
 				end
 			end
 		end
-	end
-	if (luaUpdateText ~= "") then
-		draw.SetFont(watermarkFont)
-		local textW, textH = draw.GetTextSize(luaUpdateText)
-		draw.RectFill(r, g, b, a, 10, 10, textW + 10, 3)
-		draw.RectFill(20, 20, 20, 120, 10, 13, textW + 10, 10 + textH)
-		draw.Text(255, 255, 255, 255, 15, 18, watermarkFont, luaUpdateText)
-	end
+    end
 end
-
-------------------------------------------------------------------------------------------
-
-local menuref = gui.Reference("MENU")
-local settingsmisc = gui.Reference('SETTINGS', "Miscellaneous");    
-local font = draw.CreateFont("Tahoma", 13, 13);
-local font_bold = draw.CreateFont("Tahoma Bold", 15, 15);
-local config = "default";
 
 ------------------------------------------------------------------------------------------
 
