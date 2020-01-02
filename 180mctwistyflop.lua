@@ -36,9 +36,9 @@ print("--------------------------------------------------------------")
 --Auto Update (pasted from Onion's)
 
 local luaFileName = GetScriptName()
-local luaFileDownloadURL = "https://raw.githubusercontent.com/urmumusesmyhakerino/onions_lua_repo/master/onions_menu.lua"
-local luaVersionURL = "https://raw.githubusercontent.com/urmumusesmyhakerino/onions_lua_repo/master/version.txt"
-local luaVersion = "1.2.8"
+local luaFileDownloadURL = "https://raw.githubusercontent.com/180mctwistyflop/180mctwistyflop/master/180mctwistyflop.lua"
+local luaVersionURL = "https://raw.githubusercontent.com/180mctwistyflop/180mctwistyflop/master/version.txt"
+local luaVersion = "1.0.0"
 local luaUpdateText = ""
 local luaVersionCheckDone = false
 local luaUpdateAvailable = false
