@@ -46,7 +46,7 @@ print("--------------------------------------------------------------")
 local luaFileName = "180mctwistyflop.lua"
 local luaFileDownloadURL = "https://raw.githubusercontent.com/180mctwistyflop/180mctwistyflop/master/180mctwistyflop.lua"
 local luaVersionURL = "https://raw.githubusercontent.com/180mctwistyflop/180mctwistyflop/master/version.txt"
-local luaVersion = "1.0.2"
+local luaVersion = "1.0.3"
 local luaUpdateText = ""
 local luaVersionCheckDone = false
 local luaUpdateAvailable = false
@@ -63,12 +63,14 @@ local function update()
             if alert1 == false then
                 print("mctwistyflop: unable to update, please enable config editing and config writing!")
                 print("--------------------------------------------------------------")
+                local error = gui.Text(settingsmisc, "                      ! please enable !")
+                local error1 = gui.Text(settingsmisc, "      ! config editing and config writing !")
                 alert1 = true
 			end
 		else
             if (luaUpdateAvailable and not luaUpdateDownloaded) then
                 if alert2 == false then
-                    print("mctwistyflop: script has been updated. reload the script.")
+                    print("mctwistyflop: -ERROR- script has been updated. reload the script.")
                     print("--------------------------------------------------------------")
                     local reload = gui.Text(settingsmisc, "        ! mctwistyflop has been updated !")
                     local reload1 = gui.Text(settingsmisc, "                          reload pls -3-")
