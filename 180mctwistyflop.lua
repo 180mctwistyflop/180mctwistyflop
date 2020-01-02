@@ -436,7 +436,7 @@ if InAir < 257 then
 if Velocity > 250 or InAir < 257 then
    draw.Text( 10, 980, "FAKE" )
 else
-   draw.Text( 10, 1000, "FAKE" )
+   draw.Text( 10, 10, "FAKE" )
 end
 else
    draw.Text( 10, 980, "FAKE" )
@@ -460,13 +460,13 @@ else
    draw.Text( 10, 1030, "FAKE" )
 end
 else
-   draw.Text( 10, 1005, "FAKE" )
+   draw.Text( 10, 1030, "FAKE" )
 end
 end
 
 if input.IsButtonDown(ducking) == false then
 if InAir < 257 or Velocity > 250 then
-   draw.Text( 10, 1030, "FAKE" )
+   draw.Text( 10, 1003, "FAKE" )
 else
    draw.Text( 10, 1030, "FAKE" )
 end
@@ -479,7 +479,7 @@ if InAir < 257 or Velocity > 250 then
 return
 end
 draw.Color( 255, 255, 255, 255 )
-draw.Text( 10, 1005, "DUCK" )
+draw.Text( 10, 1000, "DUCK" )
 end
 end
 
