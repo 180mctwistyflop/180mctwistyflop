@@ -356,64 +356,20 @@ end
 
 if gui.GetValue("rbot_active") == true and gui.GetValue("rbot_antiaim_enable") == true and engine.GetServerIP() ~= nil and Entity:IsAlive() then
 
-   local local_player = entities.GetLocalPlayer();
-   local lowerbody = local_player:GetProp('m_flLowerBodyYawTarget');
+    local local_player = entities.GetLocalPlayer();
+    local lowerbody = local_player:GetProp('m_flLowerBodyYawTarget');
 
-
+    local difference = math.floor( math.abs(yaw - lowerbody))
+    local r,g,b = difference * 255 / 58, 255 - ( difference * 255 / 58 ), 0, 255
 if gui.GetValue("rbot_antiaim_stand_desync") == 0 then
     r,g,b = 228,24,0
-else
-
-    if (math.abs(yaw - lowerbody) <= 1 )  then
-       r,g,b = 228,24,0
-end   
-    if (math.abs(yaw - lowerbody) >= 10 )  then
-       r,g,b = 222,60,0
-end
-    if (math.abs(yaw - lowerbody) >= 20 )  then
-       r,g,b = 222,93,0
-end
-    if (math.abs(yaw - lowerbody) >= 30 )  then
-       r,g,b = 215,110,0
-end
-    if (math.abs(yaw - lowerbody) >= 40 )  then
-       r,g,b = 210,140,0
-end
-    if (math.abs(yaw - lowerbody) >= 50 )  then
-       r,g,b = 201,160,0
-end
-    if (math.abs(yaw - lowerbody) >= 60 )  then
-       r,g,b = 208,205,0
-end
-    if (math.abs(yaw - lowerbody) >= 70 )  then
-       r,g,b = 211, 222, 0
-end
-    if (math.abs(yaw - lowerbody) >= 80 )  then
-       r,g,b = 168,222,0
-end    
-end
-
-if Velocity > 0 and Velocity <=70 then
-if gui.GetValue("rbot_antiaim_move_desync") == 0 then
-    r,g,b = 228,24,0
-else
-    r,g,b = 211, 222, 0
-end
-end
-
-if Velocity > 70 and Velocity <=250 then
-if gui.GetValue("rbot_antiaim_move_desync") == 0 then
-    r,g,b = 228,24,0
-else
-    r,g,b = 208,205,0
-end
 end
 
 if input.IsButtonDown(1) or input.IsButtonDown(69) then
     r,g,b = 228,24,0
 end
 
-   draw.Color( r, g, b, 255 )
+draw.Color( r, g, b, 255 )
 
 if get_abs_fps() <=60 and fpsvalue == true then
 if input.IsButtonDown(ducking) then
@@ -421,7 +377,7 @@ if InAir < 257 then
 if Velocity > 250 or InAir < 257 then
    draw.Text( 10, 980, "FAKE" )
 else
-   draw.Text( 10, 1005, "FAKE" )
+   draw.Text( 10, 1000, "FAKE" )
 end
 else
    draw.Text( 10, 980, "FAKE" )
@@ -432,7 +388,7 @@ if input.IsButtonDown(ducking) == false then
 if InAir < 257 or Velocity > 250 then
    draw.Text( 10, 980, "FAKE" )
 else
-   draw.Text( 10, 1005, "FAKE" )
+   draw.Text( 10, 1000, "FAKE" )
 end
 end
 else
