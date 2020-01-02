@@ -62,19 +62,17 @@ local function update()
         if (gui.GetValue("lua_allow_http") == false or gui.GetValue("lua_allow_cfg") == false) then
             if alert1 == false then
                 print("mctwistyflop: unable to update, please enable config editing and config writing!")
+                print("--------------------------------------------------------------")
                 alert1 = true
 			end
 		else
             if (luaUpdateAvailable and not luaUpdateDownloaded) then
                 if alert2 == false then
-                    local curtime = math.floor(globals.CurTime())
-                    local delay = curtime+2
-                    print(curtime)
-                    --print("mctwistyflop: update available... please wait while the script updates...")
-                    if curtime == delay then
-                        print("mctwistyflop: script has been updated. reload the script.")
-                        alert2 = true
-                    end
+                    print("mctwistyflop: script has been updated. reload the script.")
+                    print("--------------------------------------------------------------")
+                    local reload = gui.Text(settingsmisc, "        ! mctwistyflop has been updated !")
+                    local reload1 = gui.Text(settingsmisc, "                          reload pls -3-")
+                    alert2 = true
                 else
                     return
                 end
@@ -97,7 +95,6 @@ local function update()
 					luaUpdateAvailable = true
 				else
                     luaUpdated = true
-                    print("mctwistyflop: lua is already updated.")
 				end
 			end
 		end
@@ -110,10 +107,9 @@ local mctwistyflop = gui.Window("mctwistyflop", "                               
 local groupbox = gui.Groupbox(mctwistyflop, "part 1", 10, 20, 240, 280)
 local groupbox2 = gui.Groupbox(mctwistyflop, "part 2", 260, 20, 240, 280)
 local switch = gui.Checkbox(settingsmisc, "[mctwistyflop]", "[mctwistyflop] toggle menu", false)
+local rage = gui.Checkbox(groupbox, "rage", "rage checkbox", false)
 local antiaim = gui.Checkbox(groupbox, "anti aim", "anti aim checkbox", false)
 local visual = gui.Checkbox(groupbox, "visual", "visuals checkbox", false)
-local legit = gui.Checkbox(groupbox, "legit", "legit checkbox", false)
-
 
 function menu()
     if switch:GetValue() then
@@ -130,6 +126,53 @@ end
 ----------------------------------------------
 
 
+
+------------------------------------------------------------------------------------------
+
+local ragewindow = gui.Window("mctwistyflop", "                                                         - rage -", 20, 1, 510, 350)
+local ragebox = gui.Groupbox(ragewindow, "part 1", 10, 20, 240, 280)
+local ragebox2 = gui.Groupbox(ragewindow, "part 2", 260, 20, 240, 280)
+
+function ragemenu()
+    if mctwistyflop:IsActive() then
+        if rage:GetValue() then
+            if menuref:IsActive() then
+                ragewindow:SetActive(1)
+            else
+                ragewindow:SetActive(0)
+            end
+        else
+            ragewindow:SetActive(0)
+        end
+    else
+        ragewindow:SetActive(0)
+    end
+end
+
+----------------------------------------------
+
+local revolver_check = gui.Checkbox(ragebox, "revolver_fix", "auto-revolver fix", false)
+
+local abc = 0
+local function revolver_fix(cmd)
+    local me = entities.GetLocalPlayer()
+    if revolver_check:GetValue() and me ~= nil then
+        local wep = me:GetPropEntity("m_hActiveWeapon")
+
+        if wep ~= nil and wep:GetWeaponID() == 64 then
+            abc = abc + 1
+            if abc <= 6 then
+                cmd:SetButtons(cmd:GetButtons() | (1 << 0))
+            else
+                abc = 0
+                local m_flPostponeFireReadyTime = wep:GetPropInt("m_flPostponeFireReadyTime")
+                if m_flPostponeFireReadyTime > 0 and m_flPostponeFireReadyTime < globals.CurTime() then
+                    cmd:SetButtons(cmd:GetButtons() & ~(1 << 0))
+                end
+            end
+        end
+    end
+end
 
 ------------------------------------------------------------------------------------------
 
@@ -319,7 +362,7 @@ if engine.GetServerIP() ~= nil and Entity:IsAlive() then
 if InAir < 257 or Velocity > 250 then
 if gui.GetValue("msc_fakelag_enable") == true and Velocity >= 300 and input.IsButtonDown(ducking) == false then
    draw.Color( 168,222,0,255 )
-   draw.Text( 10, 1060, "LC" )
+   draw.Text( 10, 1030, "LC" )
 else
 if input.IsButtonDown(ducking) == false or InAir < 257 or Velocity > 250 then
 if gui.GetValue("msc_fakelag_mode") == 2 then
@@ -365,6 +408,22 @@ if gui.GetValue("rbot_antiaim_stand_desync") == 0 then
     r,g,b = 228,24,0
 end
 
+if Velocity > 0 and Velocity <=70 then
+if gui.GetValue("rbot_antiaim_move_desync") == 0 then
+    r,g,b = 228,24,0
+else
+    r,g,b = 222, 144, 0
+end
+end
+    
+if Velocity > 70 and Velocity <=250 then
+if gui.GetValue("rbot_antiaim_move_desync") == 0 then
+    r,g,b = 228,24,0
+else
+    r,g,b = 222,96,0
+end
+end
+
 if input.IsButtonDown(1) or input.IsButtonDown(69) then
     r,g,b = 228,24,0
 end
@@ -407,7 +466,7 @@ end
 
 if input.IsButtonDown(ducking) == false then
 if InAir < 257 or Velocity > 250 then
-   draw.Text( 10, 1005, "FAKE" )
+   draw.Text( 10, 1030, "FAKE" )
 else
    draw.Text( 10, 1030, "FAKE" )
 end
@@ -420,7 +479,7 @@ if InAir < 257 or Velocity > 250 then
 return
 end
 draw.Color( 255, 255, 255, 255 )
-draw.Text( 10, 1030, "DUCK" )
+draw.Text( 10, 1005, "DUCK" )
 end
 end
 
@@ -573,8 +632,16 @@ end
 function scope_trpn()
     if scope_trans:GetValue() then
         local me = entities.GetLocalPlayer()
+        local m_bIsScoped = me:GetProp("m_bIsScoped")
+        local m_iTeamNum = me:GetProp("m_iTeamNum") -- T: 2 CT: 3
 
         if me == nil or not me:IsAlive() then
+            if m_iTeamNum == 2 then 
+                gui.SetValue("clr_chams_t_vis", 90, 90, 90, 255) 
+            end
+            if m_iTeamNum == 3 then 
+                gui.SetValue("clr_chams_ct_vis", 90, 90, 90, 255) 
+            end
             invoke_cache_callback()
             return
         end
@@ -611,9 +678,6 @@ function scope_trpn()
             invoke_cache_callback()
             return
         end
-
-        local m_bIsScoped = me:GetProp("m_bIsScoped")
-        local m_iTeamNum = me:GetProp("m_iTeamNum") -- T: 2 CT: 3
 
         if cache.filter == nil then cache.filter = filter:GetValue() end
         if cache.chams == nil then cache.chams = chams:GetValue() end
@@ -728,31 +792,26 @@ noshadows()
 
 client.AllowListener("round_start")
 
-------------------------------------------------------------------------------------------
-
-local legitwindow = gui.Window("mctwistyflop", "                                                        - legit -", 20, 1, 510, 350)
-local legitbox = gui.Groupbox(legitwindow, "part 1", 10, 20, 240, 280)
-local legitbox2 = gui.Groupbox(legitwindow, "part 2", 260, 20, 240, 280)
-
-function legitmenu()
-    if mctwistyflop:IsActive() then
-        if legit:GetValue() then
-            if menuref:IsActive() then
-                legitwindow:SetActive(1)
-            else
-                legitwindow:SetActive(0)
-            end
-        else
-            legitwindow:SetActive(0)
-        end
-    else
-        legitwindow:SetActive(0)
-    end
-end
-
 ----------------------------------------------
 
-
+local healthshot_checkbox = gui.Checkbox( visualbox2, "healthshot_check", "healthshot on kill", false )
+local healthshot_slider = gui.Slider( visualbox2, "healthshot_slider", "healthshot time", 1, 0, 10 );
+function Hit2( Event, Entity )
+    if ( Event:GetName() == 'player_death' ) then
+        if healthshot_checkbox:GetValue() then
+            local ME = client.GetLocalPlayerIndex();
+            local INT_UID = Event:GetInt( 'userid' );
+            local INT_ATTACKER = Event:GetInt( 'attacker' );
+            local NAME_Victim = client.GetPlayerNameByUserID( INT_UID );
+            local INDEX_Victim = client.GetPlayerIndexByUserID( INT_UID );
+           local NAME_Attacker = client.GetPlayerNameByUserID( INT_ATTACKER );
+            local INDEX_Attacker = client.GetPlayerIndexByUserID( INT_ATTACKER );
+            if ( INDEX_Attacker == ME and INDEX_Victim ~= ME ) then
+            entities.GetLocalPlayer( ):SetProp( "m_flHealthShotBoostExpirationTime", globals.CurTime() + healthshot_slider:GetValue())
+            end
+        end
+    end
+end
 
 ------------------------------------------------------------------------------------------
 
@@ -761,7 +820,7 @@ end
 callbacks.Register("Draw", menu)
 callbacks.Register("Draw", antiaimmenu)
 callbacks.Register("Draw", visualsmenu)
-callbacks.Register("Draw", legitmenu)
+callbacks.Register("Draw", ragemenu)
 callbacks.Register("Draw", is_inverted_check)
 callbacks.Register("Draw", inverter_toggle)
 callbacks.Register("Draw", set_desync)
@@ -775,12 +834,18 @@ callbacks.Register("Draw", scope_trpn)
 callbacks.Register("Draw", rgbghost);
 callbacks.Register("Draw", update)
 
+--CreateMove
+
+callbacks.Register("CreateMove", revolver_fix)
+
 --FireGameEvent
 
 callbacks.Register ("FireGameEvent", event)
+callbacks.Register( 'FireGameEvent', Hit2 )
 
 --Listener
 
 client.AllowListener("round_start")
+client.AllowListener( 'player_death' );
 
 ------------------------------------------------------------------------------------------
