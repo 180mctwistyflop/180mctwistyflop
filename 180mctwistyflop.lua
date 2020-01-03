@@ -46,7 +46,7 @@ print("--------------------------------------------------------------")
 local luaFileName = "180mctwistyflop.lua"
 local luaFileDownloadURL = "https://raw.githubusercontent.com/180mctwistyflop/180mctwistyflop/master/180mctwistyflop.lua"
 local luaVersionURL = "https://raw.githubusercontent.com/180mctwistyflop/180mctwistyflop/master/version.txt"
-local luaVersion = "1.0.6"
+local luaVersion = "1.0.7"
 local luaUpdateText = ""
 local luaVersionCheckDone = false
 local luaUpdateAvailable = false
@@ -165,13 +165,20 @@ local new_line5 = gui.Text(changelogbox, "")
 local misc_update2 = gui.Text(changelogbox, "•• Misc ••")
 local misc_text3 = gui.Text(changelogbox, "- Added Black Menu.")
 local misc_text4 = gui.Text(changelogbox, "- Added White Menu.")
+local new_line6 = gui.Text(changelogbox, "")
+local visual_update1 = gui.Text(changelogbox, "•• Visuals ••")
+local visual_text3 = gui.Text(changelogbox, "- Added Rainbow Ghost transparency slider")
+local new_line7 = gui.Text(changelogbox, "")
+local rage_update2 = gui.Text(changelogbox, "•• Rage ••")
+local rage_text3 = gui.Text(changelogbox, "- Changed resolver indicator font, colors and position")
+local rage_text2 = gui.Text(changelogbox, "- Changed resolver indicator text to 'RS'")
 local changelog_placeholder3 = gui.Text(changelogbox, "")
 local changelog_placeholder4 = gui.Text(changelogbox, "")
 
 local date1 = gui.Text(changelogbox, "-     1/2/2020     -")
 local visual_update1 = gui.Text(changelogbox, "•• Visuals ••")
-local visual_text2 = gui.Text(changelogbox, "- Fixed scope transparency changing local chams when dead.")
 local visual_text3 = gui.Text(changelogbox, "- Added Bomb Timer/Damage")
+local visual_text2 = gui.Text(changelogbox, "- Fixed scope transparency changing local chams when dead.")
 local visual_text1 = gui.Text(changelogbox, "- Added Healthshot effect.")
 local new_line4 = gui.Text(changelogbox, "")
 local misc_update1 = gui.Text(changelogbox, "•• Misc ••")
@@ -278,7 +285,7 @@ local function drawHook()
             else
                 draw.Color(255, 25, 25, 255)
             end
-            draw.Text(10, 960, gui.GetValue("rbot_resolver") and "RESOLVER" or "RESOLVER")
+            draw.Text(10, 960, gui.GetValue("rbot_resolver") and "RS" or "RS")
         end
         sampleTextWidth, sampleTextHeight = draw.GetTextSize("sample text")
     end
@@ -883,18 +890,19 @@ end
 ----------------------------------------------
 
 local rainbow_ghost = gui.Checkbox(visualbox, "rainbow_ghost", "rainbow ghost", false)
+local rainbow_slider = gui.Slider(visualbox, "rainbow_slider", "ghost transparency", 255, 0, 255)
 
 --
 
 function rgbghost()
     if rainbow_ghost:GetValue() then
+        local a = math.floor(gui.GetValue("rainbow_slider"))
         local speed = 1
         local r = math.floor(math.sin((globals.RealTime()) * 2) * 127 + 128)
         local g = math.floor(math.sin((globals.RealTime()) * 2 + 2) * 127 + 128)
         local b = math.floor(math.sin((globals.RealTime()) * 2 + 4) * 127 + 128)
-        local a = math.floor(math.sin((globals.RealTime()) * 2 + 6) * 127 + 128)
                         
-        gui.SetValue("clr_chams_ghost_client", r,g,b)
+        gui.SetValue("clr_chams_ghost_client", r,g,b,a)
 
     end
 end
@@ -1276,11 +1284,11 @@ end
 
 ---------------------------------------------
 
-local white_menu = gui.Button(miscbox, "cherry's black and white menu", sequence_func)
+local white_menu = gui.Button(miscbox, "cherry's white menu", sequence_func)
 local confirmwindow = gui.Window("mctwistyflop", "      confirm menu change", 1000, 500, 200, 160 )
 local confirmbox = gui.Groupbox(confirmwindow, "", 10, 10, 180, 110 )
 local sequence_button = gui.Button(confirmbox, "confirm", confirm_func)
-local cancel_button = gui.Button(confirmbox, "cancel", cancel_func)
+local cancel_button = gui.Button(confirmbox, "close", cancel_func)
 show_confirm = false
 confirmwindow:SetActive(0)
 
@@ -1302,6 +1310,7 @@ end
 
 function confirm_func()
     show_confirm = false
+    print("mctwistyflop: changed menu to white theme")
     gui.SetValue("clr_gui_button_clicked", 0, 0, 0, 255)
     gui.SetValue("clr_gui_button_hover", 0, 0, 0, 255)
     gui.SetValue("clr_gui_button_idle", 83, 83, 83, 255)
@@ -1355,11 +1364,11 @@ end
 
 ---------------------------------------------
 
-local black_menu = gui.Button(miscbox, "cherry's black and white menu", sequence_func1)
+local black_menu = gui.Button(miscbox, "cherry's black menu", sequence_func1)
 local confirmwindow1 = gui.Window("mctwistyflop", "      confirm menu change", 1000, 500, 200, 160 )
 local confirmbox1 = gui.Groupbox(confirmwindow1, "", 10, 10, 180, 110 )
 local sequence_button1 = gui.Button(confirmbox1, "confirm", confirm_func1)
-local cancel_button1 = gui.Button(confirmbox1, "cancel", cancel_func1)
+local cancel_button1 = gui.Button(confirmbox1, "close", cancel_func1)
 show_confirm1 = false
 confirmwindow:SetActive(0)
 
@@ -1381,6 +1390,7 @@ end
 
 function confirm_func1()
     show_confirm1 = false
+    print("mctwistyflop: changed menu to black theme")
     gui.SetValue("clr_gui_button_clicked", 255, 255, 255, 255)
     gui.SetValue("clr_gui_button_hover", 255, 255, 255, 255)
     gui.SetValue("clr_gui_button_idle", 0, 0, 0, 0)
