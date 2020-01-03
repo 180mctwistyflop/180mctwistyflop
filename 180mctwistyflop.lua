@@ -46,7 +46,7 @@ print("--------------------------------------------------------------")
 local luaFileName = "180mctwistyflop.lua"
 local luaFileDownloadURL = "https://raw.githubusercontent.com/180mctwistyflop/180mctwistyflop/master/180mctwistyflop.lua"
 local luaVersionURL = "https://raw.githubusercontent.com/180mctwistyflop/180mctwistyflop/master/version.txt"
-local luaVersion = "1.0.5"
+local luaVersion = "1.0.4"
 local luaUpdateText = ""
 local luaVersionCheckDone = false
 local luaUpdateAvailable = false
@@ -55,26 +55,31 @@ local luaUpdated = false
 local alert1 = false
 local alert2 = false
 local alert3 = false
+
+--
+
 draw.CreateFont(Tahoma, 70, 70 )
 
 local function update()
 	if (luaUpdated == false) then
         if (gui.GetValue("lua_allow_http") == false or gui.GetValue("lua_allow_cfg") == false) then
             if alert1 == false then
-                print("mctwistyflop: unable to update, please enable config editing and config writing!")
+                print("mctwistyflop: -ERROR- unable to update, please enable config editing and config writing!")
                 print("--------------------------------------------------------------")
                 local error = gui.Text(settingsmisc, "                      ! please enable !")
                 local error1 = gui.Text(settingsmisc, "      ! config editing and config writing !")
                 alert1 = true
+            else
+                return
 			end
 		else
             if (luaUpdateAvailable and not luaUpdateDownloaded) then
                 if alert2 == false then
-                    print("mctwistyflop: -ERROR- script has been updated. reload the script.")
+                    print("mctwistyflop: script has been updated. reload the script.")
                     print("--------------------------------------------------------------")
+                    alert2 = true
                     local reload = gui.Text(settingsmisc, "        ! mctwistyflop has been updated !")
                     local reload1 = gui.Text(settingsmisc, "                          reload pls -3-")
-                    alert2 = true
                 else
                     return
                 end
@@ -153,17 +158,17 @@ end
 
 --
 
-local changelog_text1 = gui.Text(changelogbox, "- Added Healthshot effect.")
-local changelog_text2 = gui.Text(changelogbox, "- Added Automatic Resolver (made by clipper)")
-local changelog_text3 = gui.Text(changelogbox, "- Fixed Skeet indicator colors.")
-local changelog_text4 = gui.Text(changelogbox, "- Fake Duck indicator now goes above FAKE indicator.")
-local changelog_text5 = gui.Text(changelogbox, "- Fixed scope transparency changing local chams when dead.")
-local changelog_text6 = gui.Text(changelogbox, "- Added Bomb Timer/Damage")
-local changelog_text7 = gui.Text(changelogbox, "- Fixed Revolver Fix.")
+local changelog_text1 = gui.Text(changelogbox, "- (Visuals) Added Healthshot effect.")
+local changelog_text2 = gui.Text(changelogbox, "- (Rage) Added Automatic Resolver (made by clipper)")
+local changelog_text3 = gui.Text(changelogbox, "- (Anti-Aim) Fixed Skeet indicator colors.")
+local changelog_text4 = gui.Text(changelogbox, "- (Anti-Aim) Fake Duck indicator now goes above FAKE indicator.")
+local changelog_text5 = gui.Text(changelogbox, "- (Visuals) Fixed scope transparency changing local chams when dead.")
+local changelog_text6 = gui.Text(changelogbox, "- (Visuals) Added Bomb Timer/Damage")
+local changelog_text7 = gui.Text(changelogbox, "- (Rage) Fixed Revolver Fix.")
 local changelog_text8 = gui.Text(changelogbox, "- Added Misc Tab")
-local changelog_text9 = gui.Text(changelogbox, "- Work in progress: F12 Killsound")
+local changelog_text9 = gui.Text(changelogbox, "- (Misc) Added Rainbow Watermark")
 local changelog_text10 = gui.Text(changelogbox, "-")
-local changelog_text11 = gui.Text(changelogbox, "-")
+local changelog_text11 = gui.Text(changelogbox, "- Work in progress: (Misc) F12 Killsound")
 
 --
 
@@ -1188,6 +1193,49 @@ end
 
 ---------------------------------------------
 
+local watermark_check = gui.Checkbox(miscbox, "watermark_check", "mctwistyflop watermark", value )
+local font = draw.CreateFont('Tahoma', 14);
+
+
+function watermark()
+    if watermark_check:GetValue() then
+        local r = math.floor(math.sin((globals.RealTime()) * 2) * 127 + 128)
+        local g = math.floor(math.sin((globals.RealTime()) * 2 + 2) * 127 + 128)
+        local b = math.floor(math.sin((globals.RealTime()) * 2 + 4) * 127 + 128)
+        local LocalPlayer = entities.GetLocalPlayer();
+        local playerResources = entities.GetPlayerResources();
+
+        local delay;
+        local tick;
+        local time = os.date("%X");
+        if (LocalPlayer ~= nil) then
+            delay = playerResources:GetPropInt("m_iPing", LocalPlayer:GetIndex()) .. 'ms';
+            tick = math.floor(LocalPlayer:GetProp("localdata", "m_nTickBase") + 0x20);
+        end
+
+        local watermarkText = ' mctwistyflop | ';
+	        if (delay ~= nil) then
+            watermarkText = watermarkText .. 'rtt: ' .. delay;
+        end
+        if (tick ~= nil) then
+            watermarkText = watermarkText .. ' | rate: ' .. tick .. ' | ';
+        end
+        watermarkText = watermarkText .. time;
+        draw.SetFont(font);
+        local w, h = draw.GetTextSize(watermarkText);
+        local weightPadding, heightPadding = 10, 7;
+        local watermarkWidth = weightPadding + w;
+        local start_x, start_y = draw.GetScreenSize();
+        start_x, start_y = start_x - watermarkWidth - 5, start_y * 0.008;
+	    draw.Color(r,g,b, 128);
+        draw.FilledRect(start_x, start_y, start_x + watermarkWidth, start_y + h + heightPadding);
+        draw.Color(255,255,255);
+        draw.Text(start_x + weightPadding / 2, start_y + heightPadding / 2, watermarkText)
+    end
+end
+
+---------------------------------------------
+
 local F12 = gui.Checkbox(miscbox2, "F12 Hitsound", "f12 hitsound", false)
 local f12_notice = gui.Text(miscbox2, "Download the F12 hitsounds in the discord")
 local f12_notice2 = gui.Text(miscbox2, "                     for this to work...")
@@ -1226,6 +1274,7 @@ callbacks.Register("Draw", BombDamageIndicator)
 callbacks.Register("Draw", changelog)
 callbacks.Register("Draw", drawHook)
 callbacks.Register("Draw", miscmenu)
+callbacks.Register("Draw", watermark)
 
 --CreateMove
 
