@@ -112,6 +112,8 @@ local switch = gui.Checkbox(settingsmisc, "[mctwistyflop]", "[mctwistyflop] togg
 local rage = gui.Checkbox(groupbox, "rage", "rage checkbox", false)
 local antiaim = gui.Checkbox(groupbox, "anti aim", "anti aim checkbox", false)
 local visual = gui.Checkbox(groupbox, "visual", "visuals checkbox", false)
+local misc = gui.Checkbox(groupbox, "misc", "misc checkbox", false )
+local changelog_c = gui.Checkbox(groupbox2, "changelog show", "show changelog", false )
 
 function menu()
     if switch:GetValue() then
@@ -127,7 +129,46 @@ end
 
 ----------------------------------------------
 
+local changelog_window = gui.Window("mctwistyflop", "                                                      - changelog -", 530, 1, 510, 425)
+local changelogbox = gui.Groupbox(changelog_window, "", 10, 10, 490, 288)
+local changelogbox1 = gui.Groupbox(changelog_window, "", 10, 310, 490, 73)
 
+--
+
+function changelog()
+    if mctwistyflop:IsActive() then
+        if changelog_c:GetValue() then
+            if menuref:IsActive() then
+                changelog_window:SetActive(1)
+            else
+                changelog_window:SetActive(0)
+            end
+        else
+            changelog_window:SetActive(0)
+        end
+    else
+        changelog_window:SetActive(0)
+    end
+end
+
+--
+
+local changelog_text1 = gui.Text(changelogbox, "- Added Healthshot effect.")
+local changelog_text2 = gui.Text(changelogbox, "- Added Automatic Resolver (made by clipper)")
+local changelog_text3 = gui.Text(changelogbox, "- Fixed Skeet indicator colors.")
+local changelog_text4 = gui.Text(changelogbox, "- Fake Duck indicator now goes above FAKE indicator.")
+local changelog_text5 = gui.Text(changelogbox, "- Fixed scope transparency changing local chams when dead.")
+local changelog_text6 = gui.Text(changelogbox, "- Added Bomb Timer/Damage")
+local changelog_text7 = gui.Text(changelogbox, "- Fixed Revolver Fix.")
+local changelog_text8 = gui.Text(changelogbox, "- Added Misc Tab")
+local changelog_text9 = gui.Text(changelogbox, "- Work in progress: F12 Killsound")
+local changelog_text10 = gui.Text(changelogbox, "-")
+local changelog_text11 = gui.Text(changelogbox, "-")
+
+--
+
+local credits = gui.Text(changelogbox1, "Credits - ")
+local cherry = gui.Text(changelogbox1, "cherry#9999")
 
 ------------------------------------------------------------------------------------------
 
@@ -154,11 +195,13 @@ end
 ----------------------------------------------
 
 local revolver_check = gui.Checkbox(ragebox, "revolver_fix", "auto-revolver fix", false)
+local isautocock = gui.GetValue("rbot_revolver_autocock")
 
 local abc = 0
 local function revolver_fix(cmd)
     local me = entities.GetLocalPlayer()
     if revolver_check:GetValue() and me ~= nil then
+        gui.SetValue("rbot_revolver_autocock", 0)
         local wep = me:GetPropEntity("m_hActiveWeapon")
 
         if wep ~= nil and wep:GetWeaponID() == 64 then
@@ -171,6 +214,110 @@ local function revolver_fix(cmd)
                 if m_flPostponeFireReadyTime > 0 and m_flPostponeFireReadyTime < globals.CurTime() then
                     cmd:SetButtons(cmd:GetButtons() & ~(1 << 0))
                 end
+            end
+        end
+    else
+        gui.SetValue("rbot_revolver_autocock", isautocock)
+    end
+end
+
+----------------------------------------------
+
+--credits to clipper if you're reading this... i 100% did not make this script below
+
+local enabled = gui.Checkbox(ragebox, "rbot_autoresolver", "automatic resolver", 0)
+local isDesyncing = {};
+local lastSimtime = {};
+local desyncCooldown = {};
+local lastTick = 0;
+local pLocal = entities.GetLocalPlayer();
+local resolverTextCount = 0;
+local sampleTextWidth, sampleTextHeight
+
+--
+
+local function drawHook()
+    pLocal = entities.GetLocalPlayer();
+
+    if enabled:GetValue() then
+        local tahoma_bold = draw.CreateFont("Verdana Bold", 30, 70)
+        draw.SetFont(tahoma_bold)
+        if engine.GetMapName() ~= "" then
+            if gui.GetValue("rbot_resolver") then
+                draw.Color(59, 255, 25, 255)
+            else
+                draw.Color(255, 25, 25, 255)
+            end
+            draw.Text(10, 960, gui.GetValue("rbot_resolver") and "RESOLVER" or "RESOLVER")
+        end
+        sampleTextWidth, sampleTextHeight = draw.GetTextSize("sample text")
+    end
+
+    if enabled:GetValue() then
+        resolverTextCount = 0;
+        for pEntityIndex, pEntity in pairs(entities.FindByClass("CCSPlayer")) do
+            if pEntity:GetTeamNumber() ~= pLocal:GetTeamNumber() and pEntity:IsPlayer() and pEntity:IsAlive() then
+                if globals.TickCount() > lastTick then
+                    if lastSimtime[pEntityIndex] ~= nil then
+                        if pEntity:GetProp("m_flSimulationTime") == lastSimtime[pEntityIndex] then
+                            isDesyncing[pEntityIndex] = true;
+                            desyncCooldown[pEntityIndex] = globals.TickCount();
+                        else
+                            if desyncCooldown[pEntityIndex] ~= nil then
+                                if desyncCooldown[pEntityIndex] < globals.TickCount() - 128 then
+                                    isDesyncing[pEntityIndex] = false;
+                                end
+                            else
+                                isDesyncing[pEntityIndex] = false;
+                            end
+                        end
+                    end
+                    lastSimtime[pEntityIndex] = pEntity:GetProp("m_flSimulationTime")
+                end
+
+                if engine.GetMapName() ~= "" then
+                    if isDesyncing[pEntityIndex] then
+                        if enabled:GetValue() then
+                            local pos = 410 + (sampleTextHeight * resolverTextCount)
+                        end
+                        resolverTextCount = resolverTextCount+1
+                    end
+                end
+            end
+        end
+        lastTick = globals.TickCount();
+        if resolverTextCount ~= 0 then
+            gui.SetValue("rbot_resolver", 1);
+        else
+            gui.SetValue("rbot_resolver", 0);
+        end
+    end
+end
+
+local function aimbotTargetHook(pEntity)
+    if enabled:GetValue() then
+
+        if not isDesyncing[pEntity:GetIndex()] then
+            gui.SetValue("rbot_resolver", 0);
+        else
+            gui.SetValue("rbot_resolver", 1);
+        end
+    end
+end
+
+local function drawEspHook(builder)
+
+    if enabled:GetValue() then
+        local pEntity = builder:GetEntity()
+
+        if pEntity:IsPlayer() and pEntity:IsAlive() and pEntity:GetTeamNumber() ~= pLocal:GetTeamNumber() then
+
+            if isDesyncing[pEntity:GetIndex()] then
+                builder:Color(59, 255, 25, 255)
+                builder:AddTextTop("DESYNC")
+            else
+                builder:Color(255, 25, 25, 255)
+                builder:AddTextTop("DESYNC")
             end
         end
     end
@@ -633,9 +780,6 @@ end
 
 function scope_trpn()
     if scope_trans:GetValue() then
-        local me = entities.GetLocalPlayer()
-        local m_bIsScoped = me:GetProp("m_bIsScoped")
-        local m_iTeamNum = me:GetProp("m_iTeamNum") -- T: 2 CT: 3
 
         if me == nil or not me:IsAlive() then
             if m_iTeamNum == 2 then 
@@ -815,6 +959,248 @@ function Hit2( Event, Entity )
     end
 end
 
+----------------------------------------------
+
+local GetPlayerResources, vector_Distance, PlayerNameByUserID, g_curtime, entities_GetByIndex, draw_GetScreenSize, string_format, draw_SetFont, draw_GetTextSize, draw_Color, draw_Text, draw_FilledRect, entities_FindByClass, GetLocalPlayer, math_sqrt, math_exp, math_ceil = entities.GetPlayerResources, vector.Distance, client.GetPlayerNameByUserID, globals.CurTime, entities.GetByIndex, draw.GetScreenSize, string.format, draw.SetFont, draw.GetTextSize, draw.Color, draw.Text, draw.FilledRect, entities.FindByClass, entities.GetLocalPlayer, math.sqrt, math.exp, math.ceil
+
+local bombtimer = gui.Checkbox(visualbox2, "bomb_info", "bomb info", false)
+
+local Vf30 = draw.CreateFont("Tahoma", 30)
+
+local function lerp_pos(x1, y1, z1, x2, y2, z2, percentage)
+	local x = (x2 - x1) * percentage + x1
+	local y = (y2 - y1) * percentage + y1
+	local z = (z2 - z1) * percentage + z1
+
+	return x, y, z
+end
+
+local function get_site_name(site)
+	local a_x, a_y, a_z = GetPlayerResources():GetProp("m_bombsiteCenterA")
+	local b_x, b_y, b_z = GetPlayerResources():GetProp("m_bombsiteCenterB")
+
+	local site_x1, site_y1, site_z1 = site:GetMins()
+	local site_x2, site_y2, site_z2 = site:GetMaxs()
+
+	local site_x, site_y, site_z = lerp_pos(site_x1, site_y1, site_z1, site_x2, site_y2, site_z2, 0.5)
+
+	local distance_a = vector_Distance(site_x, site_y, site_z, a_x, a_y, a_z)
+	local distance_b = vector_Distance(site_x, site_y, site_z, b_x, b_y, b_z)
+
+	return distance_b > distance_a and "A" or "B"
+end
+
+function bombEvents(e)
+	if not bombtimer:GetValue() or e:GetName() ~= "bomb_beginplant" and
+	e:GetName() ~= "bomb_abortplant" and e:GetName() ~= "bomb_planted" and
+	e:GetName() ~= "bomb_begindefuse" and e:GetName() ~= "bomb_abortdefuse" and
+	e:GetName() ~= "bomb_defused" and e:GetName() ~= "round_officially_ended" and 
+	e:GetName() ~= "round_prestart" and e:GetName() ~= 'bomb_exploded' then
+		return
+	end
+
+	if e:GetName() == "bomb_beginplant" then
+		planter, plantPercent, plantingStarted, plantingSite, drawPlant = PlayerNameByUserID(e:GetInt("userid")), 0, g_curtime(), get_site_name(entities_GetByIndex(e:GetInt("site"))), true
+	end
+
+	if e:GetName() == "bomb_abortplant" then
+		drawPlant = false
+	end
+
+	if e:GetName() == "bomb_planted" then
+		drawPlant = false
+		plantedPercent, plantedAt, drawBombPlanted = 0, g_curtime(), true
+	end
+
+	if e:GetName() == "bomb_begindefuse" then
+		defuser, defusePercent, defuseStarted, drawDefuse = PlayerNameByUserID(e:GetInt("userid")), 0, g_curtime(), true
+	end
+
+	if e:GetName() == "bomb_abortdefuse" then
+		drawDefuse = false
+	end
+
+	if e:GetName() == "bomb_defused" or e:GetName() == 'bomb_exploded' or e:GetName() == "round_prestart" or e:GetName() == "round_officially_ended" then
+		drawBombPlanted, drawDefuse, drawPlant = false, false, false
+	end
+end
+
+function drawbombtimers()
+	if not bombtimer:GetValue() then
+		return
+	end
+
+	local screenX, screenY = draw_GetScreenSize()
+
+	if drawPlant then
+		local plantTime = string_format("%s - %0.1fs", planter, plantingStarted - g_curtime() + 3.125)
+		local plantingInfo = string_format("%s - Planting", plantingSite)
+		local plantPercent = (g_curtime() - plantingStarted) / 3.125
+		draw_SetFont(Vf30)
+
+		local tW, tH = draw_GetTextSize(plantingInfo)
+		draw_Color(124, 195, 13, 255)
+		draw_Text(20, 0, plantingInfo)
+		draw_Color(255, 255, 255, 255)
+		draw_Text(20, tH, plantTime)
+
+		if plantPercent < 1 and plantPercent > 0 then
+			local plantingBar = (1 - plantPercent) * screenY
+			draw_Color(13, 13, 13, 70)
+			draw_FilledRect(0, 0, 16, screenY)
+			draw_Color(0, 150, 0, 255)
+			draw_FilledRect(1, plantingBar, 15, screenY+plantingBar)
+		end
+	end
+
+	if drawBombPlanted and entities_FindByClass("CPlantedC4")[1] ~= nil then
+		local plantedBomb = entities_FindByClass("CPlantedC4")
+
+		for i=1, #plantedBomb do
+			bLength = plantedBomb[i]:GetPropFloat("m_flTimerLength")
+			dLength = plantedBomb[i]:GetPropFloat("m_flDefuseLength")
+			bSite = plantedBomb[i]:GetPropInt("m_nBombSite") == 0 and "A" or "B"
+		end
+
+		local plantedInfo = string_format("%s - %0.1fs", bSite, (plantedAt - g_curtime()) + bLength)
+		local plantedPercent = (g_curtime() - plantedAt) / bLength
+
+		if plantedAt - g_curtime() + bLength > 0 then
+			draw_SetFont(Vf30)
+			pTW, pTH = draw_GetTextSize(plantedInfo)
+
+			if GetLocalPlayer():GetTeamNumber() == 3 and (not GetLocalPlayer():GetPropBool("m_bHasDefuser") and (plantedAt - g_curtime()) + bLength < 10.1 or
+															  GetLocalPlayer():GetPropBool("m_bHasDefuser") and (plantedAt - g_curtime()) + bLength < 5.1) then
+				r, g, b, a = 255,13,13,255
+			else
+				r, g, b, a = 124, 195, 13, 255
+			end
+
+			draw_Color(r, g, b, a)
+			draw_Text(20, 0, plantedInfo)
+			if plantedPercent < 1 and plantedPercent > 0 then
+				local plantedBar = (1 - plantedPercent) * screenY
+				draw_Color(13, 13, 13, 70)
+				draw_FilledRect(0, 0, 16, screenY)
+				draw_Color(0, 150, 0, 255)
+				draw_FilledRect(1, screenY-plantedBar, 15, screenY)
+			end
+		end
+	end
+
+	if drawDefuse and entities_FindByClass("CPlantedC4")[1] ~= nil then
+		local plantedBomb = entities_FindByClass("CPlantedC4")
+
+		for i=1, #plantedBomb do
+			dLength = plantedBomb[i]:GetPropFloat("m_flDefuseLength")
+		end
+
+		local defuseInfo = string_format("%s - %0.1fs", defuser, (defuseStarted - g_curtime()) + dLength)
+		local defusePercent = (g_curtime() - defuseStarted) / dLength
+
+		if (defuseStarted - g_curtime()) + dLength > 0 then
+			draw_SetFont(Vf30)
+			draw_Color(255, 255, 255, 255)
+			draw_Text(20, pTH+pTH, defuseInfo)
+
+			if defusePercent < 1 and defusePercent > 0 then
+				local defuseBar = (1 - defusePercent) * screenY
+				draw_Color(13, 13, 13, 70)
+				draw_FilledRect(0, 0, 16, screenY)
+				draw_Color(0, 0, 150, 255)
+				draw_FilledRect(1, screenY-defuseBar, 15, screenY)
+			end
+		end
+	end
+end
+
+function BombDamageIndicator()
+	if not bombtimer:GetValue() or entities_FindByClass("CPlantedC4")[1] == nil then
+		return
+	end
+
+	local Bomb = entities_FindByClass("CPlantedC4")[1]
+
+	if Bomb:GetPropBool("m_bBombTicking") and g_curtime() - 1 < Bomb:GetPropFloat("m_flC4Blow") and not Bomb:GetPropBool("m_bBombDefused") then
+		local bDamage = DamagefromBomb(Bomb, GetLocalPlayer())
+		local bDmgInfo = string_format("-%i", bDamage)
+
+		if bDamage >= GetLocalPlayer():GetHealth() then
+			draw_SetFont(Vf30)
+			draw_Color(255, 0, 0, 255)
+			draw_Text(20, pTH, "FATAL")
+		elseif bDamage < GetLocalPlayer():GetHealth() and bDamage - 1 > 0 then
+			draw_SetFont(Vf30)
+			draw_Color(255,255,255,255)
+			draw_Text(20, pTH, bDmgInfo)
+		end
+	end
+end
+
+function DamagefromBomb(Bomb, Player)
+	if not bombtimer:GetValue() then
+		return
+	end
+
+	local Bxyz = {Bomb:GetAbsOrigin()}
+	local Pxyz = {Player:GetAbsOrigin()}
+	local ArmorValue = Player:GetPropInt("m_ArmorValue")
+	local C4Distance = math_sqrt((Bxyz[1] - Pxyz[1]) ^2 + (Bxyz[2] - Pxyz[2]) ^2 + (Bxyz[3] - Pxyz[3]) ^2)
+	local d = ((C4Distance-75.68) / 789.2)
+	local f1Damage = 450.7*math_exp(-d * d)
+
+	if ArmorValue > 0 then
+		local f1New = f1Damage * 0.5
+		local f1Armor = (f1Damage - f1New) * 0.5
+
+		if f1Armor > ArmorValue then
+			f1Armor = ArmorValue * 2
+			New = f1Damage - f1Armor
+		end
+
+		f1Damage = f1New
+	end
+
+	return math_ceil(f1Damage + 0.5)
+end
+
+------------------------------------------------------------------------------------------
+
+local miscwindow = gui.Window("mctwistyflop", "                                                         - misc -", 20, 1, 510, 350)
+local miscbox = gui.Groupbox(miscwindow, "part 1", 10, 20, 240, 280)
+local miscbox2 = gui.Groupbox(miscwindow, "part 2", 260, 20, 240, 280)
+
+function miscmenu()
+    if mctwistyflop:IsActive() then
+        if misc:GetValue() then
+            if menuref:IsActive() then
+                miscwindow:SetActive(1)
+            else
+                miscwindow:SetActive(0)
+            end
+        else
+            miscwindow:SetActive(0)
+        end
+    else
+        miscwindow:SetActive(0)
+    end
+end
+
+---------------------------------------------
+
+local F12 = gui.Checkbox(miscbox2, "F12 Hitsound", "f12 hitsound", false)
+local f12_notice = gui.Text(miscbox2, "Download the F12 hitsounds in the discord")
+local f12_notice2 = gui.Text(miscbox2, "                     for this to work...")
+local divider = gui.Text(miscbox2, " --------------------------------------------------- ")
+
+--
+
+function f12_hitsound()
+    if f12:GetValue() then
+        print("yeet")
+    end
+end
+
 ------------------------------------------------------------------------------------------
 
 --Draw
@@ -835,6 +1221,11 @@ callbacks.Register("Draw", draw_fake)
 callbacks.Register("Draw", scope_trpn)
 callbacks.Register("Draw", rgbghost);
 callbacks.Register("Draw", update)
+callbacks.Register("Draw", drawbombtimers)
+callbacks.Register("Draw", BombDamageIndicator)
+callbacks.Register("Draw", changelog)
+callbacks.Register("Draw", drawHook)
+callbacks.Register("Draw", miscmenu)
 
 --CreateMove
 
@@ -844,10 +1235,28 @@ callbacks.Register("CreateMove", revolver_fix)
 
 callbacks.Register ("FireGameEvent", event)
 callbacks.Register( 'FireGameEvent', Hit2 )
+callbacks.Register("FireGameEvent", bombEvents)
+
+--AimbotTarget
+
+callbacks.Register("AimbotTarget", aimbotTargetHook)
+
+--DrawESP
+
+callbacks.Register("DrawESP", drawEspHook)
 
 --Listener
 
 client.AllowListener("round_start")
-client.AllowListener( 'player_death' );
+client.AllowListener("player_death");
+client.AllowListener("bomb_beginplant")
+client.AllowListener("bomb_abortplant")
+client.AllowListener("bomb_planted")
+client.AllowListener("bomb_begindefuse")
+client.AllowListener("bomb_abortdefuse")
+client.AllowListener("bomb_defused")
+client.AllowListener('bomb_exploded')
+client.AllowListener("round_officially_ended")
+client.AllowListener("round_prestart")
 
 ------------------------------------------------------------------------------------------
