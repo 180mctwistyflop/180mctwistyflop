@@ -41,12 +41,12 @@ print("--------------------------------------------------------------")
 
 ------------------------------------------------------------------------------------------
 
---Auto Update (pasted from Onion's)
+--Auto Update (pasted from Onion's Menu)
 
 local luaFileName = "180mctwistyflop.lua"
 local luaFileDownloadURL = "https://raw.githubusercontent.com/180mctwistyflop/180mctwistyflop/master/180mctwistyflop.lua"
 local luaVersionURL = "https://raw.githubusercontent.com/180mctwistyflop/180mctwistyflop/master/version.txt"
-local luaVersion = "1.0.5"
+local luaVersion = "1.0.6"
 local luaUpdateText = ""
 local luaVersionCheckDone = false
 local luaUpdateAvailable = false
@@ -134,7 +134,7 @@ end
 
 ----------------------------------------------
 
-local changelog_window = gui.Window("mctwistyflop", "                                                      - changelog -", 530, 1, 510, 425)
+local changelog_window = gui.Window("mctwistyflop", "                                                      - changelog -", 500, 360, 510, 425)
 local changelogbox = gui.Groupbox(changelog_window, "", 10, 10, 490, 288)
 local changelogbox1 = gui.Groupbox(changelog_window, "", 10, 310, 490, 73)
 
@@ -157,22 +157,47 @@ function changelog()
 end
 
 --
+local date1 = gui.Text(changelogbox, "-     1/2/2020     -")
+local lua_update2 = gui.Text(changelogbox, "•• Lua ••")
+local lua_text2 = gui.Text(changelogbox, "- Changed changelog format.")
+local lua_text3 = gui.Text(changelogbox, "- Changed position of menus when toggling them (used to stack)")
+local new_line5 = gui.Text(changelogbox, "")
+local misc_update2 = gui.Text(changelogbox, "•• Misc ••")
+local misc_text3 = gui.Text(changelogbox, "- Added Black Menu.")
+local misc_text4 = gui.Text(changelogbox, "- Added White Menu.")
+local changelog_placeholder3 = gui.Text(changelogbox, "")
+local changelog_placeholder4 = gui.Text(changelogbox, "")
 
-local changelog_text1 = gui.Text(changelogbox, "- (Visuals) Added Healthshot effect.")
-local changelog_text2 = gui.Text(changelogbox, "- (Rage) Added Automatic Resolver (made by clipper)")
-local changelog_text3 = gui.Text(changelogbox, "- (Anti-Aim) Fixed Skeet indicator colors.")
-local changelog_text4 = gui.Text(changelogbox, "- (Anti-Aim) Fake Duck indicator now goes above FAKE indicator.")
-local changelog_text5 = gui.Text(changelogbox, "- (Visuals) Fixed scope transparency changing local chams when dead.")
-local changelog_text6 = gui.Text(changelogbox, "- (Visuals) Added Bomb Timer/Damage")
-local changelog_text7 = gui.Text(changelogbox, "- (Rage) Fixed Revolver Fix.")
-local changelog_text8 = gui.Text(changelogbox, "- Added Misc Tab")
-local changelog_text9 = gui.Text(changelogbox, "- (Misc) Added Rainbow Watermark")
-local changelog_text10 = gui.Text(changelogbox, "-")
-local changelog_text11 = gui.Text(changelogbox, "- Work in progress: (Misc) F12 Killsound")
+local date1 = gui.Text(changelogbox, "-     1/2/2020     -")
+local visual_update1 = gui.Text(changelogbox, "•• Visuals ••")
+local visual_text2 = gui.Text(changelogbox, "- Fixed scope transparency changing local chams when dead.")
+local visual_text3 = gui.Text(changelogbox, "- Added Bomb Timer/Damage")
+local visual_text1 = gui.Text(changelogbox, "- Added Healthshot effect.")
+local new_line4 = gui.Text(changelogbox, "")
+local misc_update1 = gui.Text(changelogbox, "•• Misc ••")
+local misc_text1 = gui.Text(changelogbox, "- Added Misc Tab")
+local misc_text2 = gui.Text(changelogbox, "- Added Watermark")
+local new_line3 = gui.Text(changelogbox, "")
+local rage_update1 = gui.Text(changelogbox, "•• Rage ••")
+local rage_text1 = gui.Text(changelogbox, "- Added Automatic Resolver (made by clipper)")
+local rage_text2 = gui.Text(changelogbox, "- Fixed Revolver Fix.")
+local new_line2 = gui.Text(changelogbox, "")
+local aa_update1 = gui.Text(changelogbox, "•• Anti-Aim ••")
+local aa_text1 = gui.Text(changelogbox, "- Fixed Skeet indicator colors.")
+local aa_text2 = gui.Text(changelogbox, "- Fake Duck indicator now goes above FAKE indicator.")
+local new_line1 = gui.Text(changelogbox, "")
+local workinprogress1 = gui.Text(changelogbox, "•• Work in progress ••")
+local changelog_text11 = gui.Text(changelogbox, "- F12 Killsound.")
+local changelog_placeholder1 = gui.Text(changelogbox, "")
+local changelog_placeholder2 = gui.Text(changelogbox, "")
+
+local date0 = gui.Text(changelogbox, "-     1/1/2020     -")
+local lua_update1 = gui.Text(changelogbox, "•• Lua ••")
+local lua_text1 = gui.Text(changelogbox, "- Initial Release.")
 
 --
 
-local credits = gui.Text(changelogbox1, "Credits - ")
+local credits = gui.Text(changelogbox1, "- Credits - ")
 local cherry = gui.Text(changelogbox1, "cherry#9999")
 
 ------------------------------------------------------------------------------------------
@@ -785,7 +810,7 @@ end
 
 function scope_trpn()
     if scope_trans:GetValue() then
-
+        local me = entities.GetLocalPlayer()
         if me == nil or not me:IsAlive() then
             if m_iTeamNum == 2 then 
                 gui.SetValue("clr_chams_t_vis", 90, 90, 90, 255) 
@@ -970,7 +995,7 @@ local GetPlayerResources, vector_Distance, PlayerNameByUserID, g_curtime, entiti
 
 local bombtimer = gui.Checkbox(visualbox2, "bomb_info", "bomb info", false)
 
-local Vf30 = draw.CreateFont("Tahoma", 30)
+local Vf30 = draw.CreateFont("Tahoma Bold", 30)
 
 local function lerp_pos(x1, y1, z1, x2, y2, z2, percentage)
 	local x = (x2 - x1) * percentage + x1
@@ -1249,6 +1274,164 @@ function f12_hitsound()
     end
 end
 
+---------------------------------------------
+
+local white_menu = gui.Button(miscbox, "cherry's black and white menu", sequence_func)
+local confirmwindow = gui.Window("mctwistyflop", "      confirm menu change", 1000, 500, 200, 160 )
+local confirmbox = gui.Groupbox(confirmwindow, "", 10, 10, 180, 110 )
+local sequence_button = gui.Button(confirmbox, "confirm", confirm_func)
+local cancel_button = gui.Button(confirmbox, "cancel", cancel_func)
+show_confirm = false
+confirmwindow:SetActive(0)
+
+function show_confirm_window()
+    if show_confirm then
+        confirmwindow:SetActive(1)
+    else
+        confirmwindow:SetActive(0)
+    end
+end
+
+function sequence_func()
+    show_confirm = true
+end
+
+function cancel_func()
+    show_confirm = false
+end
+
+function confirm_func()
+    show_confirm = false
+    gui.SetValue("clr_gui_button_clicked", 0, 0, 0, 255)
+    gui.SetValue("clr_gui_button_hover", 0, 0, 0, 255)
+    gui.SetValue("clr_gui_button_idle", 83, 83, 83, 255)
+    gui.SetValue("clr_gui_button_outline", 159, 159, 159, 255)
+    gui.SetValue("clr_gui_checkbox_mark", 245, 245, 245, 255)
+    gui.SetValue("clr_gui_checkbox_off", 254, 254, 254, 255)
+    gui.SetValue("clr_gui_checkbox_off_hover", 244, 244, 244, 255)
+    gui.SetValue("clr_gui_checkbox_on", 180, 180, 180, 255)
+    gui.SetValue("clr_gui_checkbox_on_hover", 109, 109, 109, 255)
+    gui.SetValue("clr_gui_combobox_arrow", 127, 127, 127, 255)
+    gui.SetValue("clr_gui_combobox_drop1", 235, 235, 235, 255)
+    gui.SetValue("clr_gui_combobox_drop2", 210, 210, 210, 255)
+    gui.SetValue("clr_gui_combobox_drop3", 200, 200, 200, 100)
+    gui.SetValue("clr_gui_combobox_shadow", 0, 0, 0, 127)
+    gui.SetValue("clr_gui_controls1", 255, 255, 255, 255)
+    gui.SetValue("clr_gui_controls2", 60, 60, 60, 255)
+    gui.SetValue("clr_gui_controls3", 220, 220, 220, 255)
+    gui.SetValue("clr_gui_groupbox_background", 235, 235, 235, 255)
+    gui.SetValue("clr_gui_groupbox_outline", 0, 0, 0, 255)
+    gui.SetValue("clr_gui_groupbox_scroll", 0, 0, 0, 255)
+    gui.SetValue("clr_gui_groupbox_shadow", 0, 0, 0, 0)
+    gui.SetValue("clr_gui_hover", 0, 0, 0, 10)
+    gui.SetValue("clr_gui_listbox_active", 0, 0, 0, 127)
+    gui.SetValue("clr_gui_listbox_background", 250, 250, 250, 255)
+    gui.SetValue("clr_gui_listbox_outline", 220, 220, 220, 255)
+    gui.SetValue("clr_gui_listbox_scroll", 127, 127, 127, 127)
+    gui.SetValue("clr_gui_listbox_select", 100, 100, 100, 127)
+    gui.SetValue("clr_gui_slider_bar1", 255, 255, 255, 255)
+    gui.SetValue("clr_gui_slider_bar2", 0, 0, 0, 255)
+    gui.SetValue("clr_gui_slider_bar3", 0, 0, 0, 255)
+    gui.SetValue("clr_gui_slider_button", 0, 0, 0, 255)
+    gui.SetValue("clr_gui_tablist1", 0, 0, 0, 255)
+    gui.SetValue("clr_gui_tablist2", 225, 225, 225, 255)
+    gui.SetValue("clr_gui_tablist3", 255, 255, 255, 255)
+    gui.SetValue("clr_gui_tablist4", 0, 0, 0, 255)
+    gui.SetValue("clr_gui_tablist_shadow", 0, 0, 0, 255)
+    gui.SetValue("clr_gui_text1", 0, 0, 0, 255)
+    gui.SetValue("clr_gui_text2", 0, 0, 0, 255)
+    gui.SetValue("clr_gui_text3", 132, 132, 132, 255)
+    gui.SetValue("clr_gui_window_background", 255, 255, 255, 255)
+    gui.SetValue("clr_gui_window_footer", 255, 255, 255, 255)
+    gui.SetValue("clr_gui_window_footer_desc", 255, 255, 255, 255)
+    gui.SetValue("clr_gui_window_footer_text", 255, 255, 255, 255)
+    gui.SetValue("clr_gui_window_header", 255, 255, 255, 255)
+    gui.SetValue("clr_gui_window_header_tab1", 0, 0, 0, 255)
+    gui.SetValue("clr_gui_window_header_tab2", 0, 0, 0, 255)
+    gui.SetValue("clr_gui_window_logo1", 255, 255, 255, 0)
+    gui.SetValue("clr_gui_window_logo2", 255, 255, 255, 0)
+    gui.SetValue("clr_gui_window_shadow", 0, 0, 0, 0)
+end
+
+---------------------------------------------
+
+local black_menu = gui.Button(miscbox, "cherry's black and white menu", sequence_func1)
+local confirmwindow1 = gui.Window("mctwistyflop", "      confirm menu change", 1000, 500, 200, 160 )
+local confirmbox1 = gui.Groupbox(confirmwindow1, "", 10, 10, 180, 110 )
+local sequence_button1 = gui.Button(confirmbox1, "confirm", confirm_func1)
+local cancel_button1 = gui.Button(confirmbox1, "cancel", cancel_func1)
+show_confirm1 = false
+confirmwindow:SetActive(0)
+
+function show_confirm_window1()
+    if show_confirm1 then
+        confirmwindow1:SetActive(1)
+    else
+        confirmwindow1:SetActive(0)
+    end
+end
+
+function sequence_func1()
+    show_confirm1 = true
+end
+
+function cancel_func1()
+    show_confirm1 = false
+end
+
+function confirm_func1()
+    show_confirm1 = false
+    gui.SetValue("clr_gui_button_clicked", 255, 255, 255, 255)
+    gui.SetValue("clr_gui_button_hover", 255, 255, 255, 255)
+    gui.SetValue("clr_gui_button_idle", 0, 0, 0, 0)
+    gui.SetValue("clr_gui_button_outline", 255, 255, 255, 255)
+    gui.SetValue("clr_gui_checkbox_mark", 0, 0, 0, 0)
+    gui.SetValue("clr_gui_checkbox_off", 0, 0, 0, 255)
+    gui.SetValue("clr_gui_checkbox_off_hover", 0, 0, 0, 255)
+    gui.SetValue("clr_gui_checkbox_on", 255, 255, 255)
+    gui.SetValue("clr_gui_checkbox_on_hover", 0, 0, 0, 255)
+    gui.SetValue("clr_gui_combobox_arrow", 176, 176, 176, 255)
+    gui.SetValue("clr_gui_combobox_drop1", 0, 0, 0, 255)
+    gui.SetValue("clr_gui_combobox_drop2", 255, 255, 255, 255)
+    gui.SetValue("clr_gui_combobox_drop3", 175, 175, 175, 100)
+    gui.SetValue("clr_gui_combobox_shadow", 0, 0, 0, 127)
+    gui.SetValue("clr_gui_controls1", 0, 0, 0, 0)
+    gui.SetValue("clr_gui_controls2", 255, 255, 255, 255)
+    gui.SetValue("clr_gui_controls3", 184, 184, 184, 255)
+    gui.SetValue("clr_gui_groupbox_background", 242, 242, 242, 0)
+    gui.SetValue("clr_gui_groupbox_outline", 255, 255, 255, 255)
+    gui.SetValue("clr_gui_groupbox_scroll", 255, 255, 255, 255)
+    gui.SetValue("clr_gui_groupbox_shadow", 0, 0, 0, 0)
+    gui.SetValue("clr_gui_hover", 0, 0, 0, 47)
+    gui.SetValue("clr_gui_listbox_active", 0, 0, 0, 127)
+    gui.SetValue("clr_gui_listbox_background", 0, 0, 0, 255)
+    gui.SetValue("clr_gui_listbox_outline", 255, 255, 255, 255)
+    gui.SetValue("clr_gui_listbox_scroll", 255, 255, 255, 255)
+    gui.SetValue("clr_gui_listbox_select", 134, 134, 134, 255)
+    gui.SetValue("clr_gui_slider_bar1", 0, 0, 0, 255)
+    gui.SetValue("clr_gui_slider_bar2", 255, 255, 255, 255)
+    gui.SetValue("clr_gui_slider_bar3", 255, 255, 255, 255)
+    gui.SetValue("clr_gui_slider_button", 140, 140, 140, 255)
+    gui.SetValue("clr_gui_tablist1", 0, 0, 0, 0)
+    gui.SetValue("clr_gui_tablist2", 255, 255, 255, 255)
+    gui.SetValue("clr_gui_tablist3", 255, 255, 255, 255)
+    gui.SetValue("clr_gui_tablist4", 0, 0, 0, 255)
+    gui.SetValue("clr_gui_tablist_shadow", 0, 0, 0, 0)
+    gui.SetValue("clr_gui_text1", 255, 255, 255, 255)
+    gui.SetValue("clr_gui_text2", 255, 255, 255, 255)
+    gui.SetValue("clr_gui_text3", 255, 255, 255, 255)
+    gui.SetValue("clr_gui_window_background", 0, 0, 0, 255)
+    gui.SetValue("clr_gui_window_footer", 0, 0, 0, 255)
+    gui.SetValue("clr_gui_window_footer_desc", 0, 0, 0, 0)
+    gui.SetValue("clr_gui_window_footer_text", 0, 0, 0, 0)
+    gui.SetValue("clr_gui_window_header", 0, 0, 0, 255)
+    gui.SetValue("clr_gui_window_header_tab1", 0, 0, 0, 255)
+    gui.SetValue("clr_gui_window_header_tab2", 0, 0, 0, 255)
+    gui.SetValue("clr_gui_window_logo1", 255, 255, 255, 0)
+    gui.SetValue("clr_gui_window_logo2", 255, 255, 255, 0)
+    gui.SetValue("clr_gui_window_shadow", 0, 0, 0, 0)
+end
+
 ------------------------------------------------------------------------------------------
 
 --Draw
@@ -1275,6 +1458,8 @@ callbacks.Register("Draw", changelog)
 callbacks.Register("Draw", drawHook)
 callbacks.Register("Draw", miscmenu)
 callbacks.Register("Draw", watermark)
+callbacks.Register("Draw", show_confirm_window)
+callbacks.Register("Draw", show_confirm_window1)
 
 --CreateMove
 
@@ -1283,7 +1468,7 @@ callbacks.Register("CreateMove", revolver_fix)
 --FireGameEvent
 
 callbacks.Register ("FireGameEvent", event)
-callbacks.Register( 'FireGameEvent', Hit2 )
+callbacks.Register("FireGameEvent", Hit2 )
 callbacks.Register("FireGameEvent", bombEvents)
 
 --AimbotTarget
